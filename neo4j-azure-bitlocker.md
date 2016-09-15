@@ -4,8 +4,8 @@
 
 ## Introduction
 
-I recently completed an interesting POC of Neo4j 3.1 on Azure, and along the way I discovered that there's not much in the way of documentation out there.
-This Gist provides some notes on how to deploy Neo4j on Azure in enterprise settings, examines the impact of Bitlocker disk encryption on Neo4j performance for common tasks.  
+I recently completed an interesting POC of Neo4j 3.1 on Azure, and discovered that there's not much in the way of documentation out there.
+This Gist provides some notes on how to deploy Neo4j on Azure in enterprise settings, and examines the impact of Bitlocker disk encryption on Neo4j performance for common tasks.  
 
 ## TopLine
 
@@ -541,7 +541,7 @@ It could be that the performance impacts of Azure virtualization greatly exceed,
 
 A better approach would be to run several batteries of tests, perhaps at different times of day or after a specified amount of VM uptime, unfortunately I didn't have that opportunity. However, the good news that Bitlocker is certainly not killing Neo4j performance and can be recommended for encrypting data at rest in Azure environments.
 
-Other notes - we got great data compression with Neo4j's inherent sparcity, coming in at 315GB.
+Other notes - we got great data compression with Neo4j's inherent sparsity, coming in at 315GB.
 
 Using SSDs with Premium storage is the key to good throughput, and it appears to work better if the VM is initially provisioned with all drives in Premium storage.
 
