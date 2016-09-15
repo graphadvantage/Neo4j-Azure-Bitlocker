@@ -1,5 +1,3 @@
-
-
 ### Neo4j 3.1 Performance on Azure VM with Bitlocker Disk Encryption
 
 # 2 Billion Relationships, 450M Nodes on an Azure VM
@@ -7,12 +5,13 @@
 ## Introduction
 
 I recently completed an interesting POC of Neo4j 3.1 on Azure, and along the way I discovered that there's not much in the way of documentation out there.
-This Gist provides some notes on how to deploy Neo4j on Azure in enterprise settings, examines the impact of Bitlocker disk encryption on Neo4j performance for command tasks.  
-I hope you find it useful!
+This Gist provides some notes on how to deploy Neo4j on Azure in enterprise settings, examines the impact of Bitlocker disk encryption on Neo4j performance for common tasks.  
 
 ## TopLine
 
 No significant impact was seen on Neo4j read/write performance on Azure VM due to Bitlocker disk encryption.
+
+If anything, Neo4j ran faster with Bitlocker....
 
 ## Azure VM Configuration
 
@@ -22,7 +21,7 @@ Note: This was actually the second time we provisioned this machine, the first t
 
 ## Neo4j Configuration
 
-We installed pre-release Neo4j 3.1 Enterprise M08 test latest improvements in the Neo4j Import Tool as well as the new role-based access control (RBAC) features.
+We installed pre-release Neo4j 3.1 Enterprise M08 to test latest improvements in the Neo4j Import Tool as well as the new role-based access control (RBAC) features.
 
 To minimize disk contention, Neo4j was installed on C:, /data on  F:, /import on G:, /logs on H:.  For this machine, I set both the min and max Java heap to 32750 MB (to reduce garbage collection), and set the page cache to 98250 MB, which left 9 GB for OS and apps.
 
@@ -94,7 +93,7 @@ Relationships:
 
 The (:Activity) nodes are dense nodes, with an average of 7.3M [:TOUCHED] relationships per node.
 
-Gunzip compressed CSV files extracted to Azure Blob Storage and then copied to the G:\import using a python script:
+Gunzip compressed CSV files were extracted to Azure Blob Storage and then copied to the G:\import using a python script:
 
 ```
 pip install azure-storage
@@ -249,7 +248,7 @@ Full results below:
 Initialization (Same for both tests)
 
 ```
-PS G:\import> .\ImportCommandPPEGMEDFull
+PS G:\import> .\ImportCommand.cmd
 
 G:\import>C:\neo4j/bin/neo4j-import  --input-encoding UTF8 --ignore-empty-strings true --ignore-extra-columns true --ski
 p-duplicate-nodes true --skip-bad-relationships true   --bad-tolerance 10000 --stacktrace true
@@ -537,7 +536,9 @@ Bitlocker Applied
 
 From these tests it's clear that Bitlocker isn't making Neo4j run slower, which was my expectation.  
 On real hardware, Bitlocker is expected to add "a single digit performace impact" according to MSFT docs, however these tests don't reveal that.
-It could be that the performance impacts of Azure virtualization greatly exceed, and are more variable, than whatever the Bitlocker overhead is.
+
+It could be that the performance impacts of Azure virtualization greatly exceed, and are more variable, than whatever the Bitlocker overhead is. Perhaps there are some Azure experts out there who can weigh in...
+
 A better approach would be to run several batteries of tests, perhaps at different times of day or after a specified amount of VM uptime, unfortunately I didn't have that opportunity. However, the good news that Bitlocker is certainly not killing Neo4j performance and can be recommended for encrypting data at rest in Azure environments.
 
 Other notes - we got great data compression with Neo4j's inherent sparcity, coming in at 315GB.
